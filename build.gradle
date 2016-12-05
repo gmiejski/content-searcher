@@ -1,0 +1,56 @@
+buildscript {
+	ext {
+		springBootVersion = '1.4.2.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'org.springframework.boot'
+
+jar {
+	baseName = 'content-searcher'
+	version = '0.0.1-SNAPSHOT'
+}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter-data-elasticsearch')
+	compile('org.springframework.boot:spring-boot-starter-web')
+	compile("org.springframework.boot:spring-boot-starter-actuator")
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+
+
+	testCompile group: 'cglib', name: 'cglib-nodep', version: '2.2'
+	testCompile group: 'org.spockframework', name: 'spock-core', version: '1.0-groovy-2.4'
+	testCompile group: 'org.spockframework', name: 'spock-spring', version: '1.0-groovy-2.4'
+	testCompile('com.jayway.restassured:rest-assured:2.6.0') {
+		exclude group: "org.codehaus.groovy", module: "groovy-all"
+	}
+
+	compile group: 'org.elasticsearch', name: 'elasticsearch', version: '2.4.2'
+}
+
+sourceSets {
+	test {
+		groovy.srcDirs = ['src/test/groovy']
+	}
+	integration {
+		groovy.srcDirs = ['src/integration/groovy']
+		resources.srcDir 'src/test/resources'
+		compileClasspath += main.output + test.output
+		runtimeClasspath += main.output + test.output
+	}
+}
+
